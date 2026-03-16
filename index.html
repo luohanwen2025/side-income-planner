@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Get personalized side-income ideas based on your skills, interests, and goals. Free AI-powered planning tool.">
+    <title>Side Income Planner - Build Your Freedom</title>
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <span class="logo-icon">💡</span>
+                <div class="logo-text">
+                    <h1>Side Income Planner</h1>
+                    <p class="tagline">Build Your Freedom</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Loading Screen -->
+            <div id="loading-screen" class="loading-screen hidden">
+                <div class="loading-content">
+                    <div class="spinner"></div>
+                    <h2>Generating Your Blueprint...</h2>
+                    <p>This may take 30-60 seconds. Please don't close this page.</p>
+                </div>
+            </div>
+
+            <!-- Error Screen -->
+            <div id="error-screen" class="error-screen hidden">
+                <div class="error-content">
+                    <div class="error-icon">⚠️</div>
+                    <h2 id="error-title">Oops! Something went wrong</h2>
+                    <p id="error-message">An error occurred while generating your blueprint.</p>
+                    <button id="retry-button" class="btn btn-primary">Try Again</button>
+                    <button id="back-button" class="btn btn-secondary">Go Back</button>
+                </div>
+            </div>
+
+            <!-- Conversation Container -->
+            <div id="conversation-container" class="conversation-container">
+                <!-- Progress Bar -->
+                <div class="progress-bar-container">
+                    <div class="progress-bar">
+                        <div id="progress-fill" class="progress-fill" style="width: 0%"></div>
+                    </div>
+                    <p class="progress-text"><span id="current-step">1</span> of <span id="total-steps">5</span></p>
+                </div>
+
+                <!-- Step 1: Basic Information -->
+                <div class="step-container" data-step="1">
+                    <div class="step-content">
+                        <h2>Welcome! Let's Find Your Perfect Side Income</h2>
+                        <p class="step-intro">Tell me about yourself so I can suggest opportunities that truly fit your life.</p>
+
+                        <div class="question-block">
+                            <label for="step1-skills" class="question-label">
+                                What skills do you have? (professional, hobbies, or life skills)
+                            </label>
+                            <textarea
+                                id="step1-skills"
+                                class="answer-textarea"
+                                placeholder="e.g., I'm good at writing, I know how to edit videos, I'm organized, I'm a parent..."
+                                rows="3"
+                            ></textarea>
+                        </div>
+
+                        <div class="question-block">
+                            <label for="step1-interests" class="question-label">
+                                What topics or activities interest you?
+                            </label>
+                            <textarea
+                                id="step1-interests"
+                                class="answer-textarea"
+                                placeholder="e.g., I love cooking, I'm into fitness, I enjoy helping people, I like technology..."
+                                rows="3"
+                            ></textarea>
+                        </div>
+
+                        <div class="question-block">
+                            <label for="step1-time" class="question-label">
+                                How many hours can you dedicate per week?
+                            </label>
+                            <input
+                                type="number"
+                                id="step1-time"
+                                class="answer-input"
+                                placeholder="e.g., 10"
+                                min="1"
+                                max="168"
+                            >
+                        </div>
+
+                        <div class="question-block">
+                            <label class="question-label">Do you prefer online work, offline work, or both?</label>
+                            <div class="radio-group">
+                                <label class="radio-label">
+                                    <input type="radio" name="work-type" value="online" checked>
+                                    <span>Online Only</span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="work-type" value="offline">
+                                    <span>Offline Only</span>
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="work-type" value="both">
+                                    <span>Both</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="example-box">
+                            <button class="example-toggle" type="button">
+                                <span class="example-icon">💡</span>
+                                <span class="example-text">See Example</span>
+                            </button>
+                            <div class="example-content hidden">
+                                <p><strong>Strong answer:</strong></p>
+                                <p>"I have skills in graphic design (5 years experience), writing blog posts, and social media management. I'm interested in health & wellness, personal finance, and helping small businesses. I can dedicate 8-12 hours per week and prefer online work."</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step-navigation">
+                        <button class="btn btn-primary next-button">Next Step</button>
+                    </div>
+                </div>
+
+                <!-- Step 2: Income Goals -->
+                <div class="step-container hidden" data-step="2">
+                    <div class="step-content">
+                        <h2>Set Your Income Target</h2>
+                        <p class="step-intro">Be realistic but ambitious. This helps me prioritize opportunities.</p>
+
+                        <div class="question-block">
+                            <label for="step2-income" class="question-label">
+                                What monthly income target would feel meaningful to you?
+                            </label>
+                            <input
+                                type="text"
+                                id="step2-income"
+                                class="answer-input"
+                                placeholder="e.g., $500, $1000, $2000..."
+                            >
+                        </div>
+
+                        <div class="question-block">
+                            <label for="step2-timeline" class="question-label">
+                                What's your timeline for earning your first dollar?
+                            </label>
+                            <input
+                                type="text"
+                                id="step2-timeline"
+                                class="answer-input"
+                                placeholder="e.g., 2 weeks, 1 month, 3 months..."
+                            >
+                        </div>
+
+                        <div class="example-box">
+                            <button class="example-toggle" type="button">
+                                <span class="example-icon">💡</span>
+                                <span class="example-text">See Example</span>
+                            </button>
+                            <div class="example-content hidden">
+                                <p><strong>Strong answer:</strong></p>
+                                <p>"I want to earn $1000 per month within 3 months. My goal is to make my first sale within 4 weeks of starting."</p>
+                                <p><strong>Another strong answer:</strong></p>
+                                <p>"I'm aiming for $500/month as a side income. I'd like to see my first dollar in 2-3 weeks."</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step-navigation">
+                        <button class="btn btn-secondary prev-button">Previous</button>
+                        <button class="btn btn-primary next-button">Next Step</button>
+                    </div>
+                </div>
+
+                <!-- Step 3: Work Preferences -->
+                <div class="step-container hidden" data-step="3">
+                    <div class="step-content">
+                        <h2>What Work Energizes You?</h2>
+                        <p class="step-intro">Understanding what you love and hate helps find opportunities you'll actually stick with.</p>
+
+                        <div class="question-block">
+                            <label for="step3-enjoy" class="question-label">
+                                What kind of work feels energizing or satisfying to you?
+                            </label>
+                            <textarea
+                                id="step3-enjoy"
+                                class="answer-textarea"
+                                placeholder="e.g., I love solving problems, I enjoy creative work, I like helping people learn..."
+                                rows="4"
+                            ></textarea>
+                        </div>
+
+                        <div class="question-block">
+                            <label for="step3-avoid" class="question-label">
+                                What kind of work feels draining or miserable?
+                            </label>
+                            <textarea
+                                id="step3-avoid"
+                                class="answer-textarea"
+                                placeholder="e.g., I hate cold calling, I dislike repetitive tasks, I'm uncomfortable with sales..."
+                                rows="4"
+                            ></textarea>
+                        </div>
+
+                        <div class="example-box">
+                            <button class="example-toggle" type="button">
+                                <span class="example-icon">💡</span>
+                                <span class="example-text">See Example</span>
+                            </button>
+                            <div class="example-content hidden">
+                                <p><strong>Strong answer:</strong></p>
+                                <p>"I feel energized when I'm creating something visually beautiful or when I can help someone understand a complex topic. I enjoy research and organizing information. I absolutely hate sales calls, aggressive marketing, and dealing with angry customers."</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="step-navigation">
+                        <button class="btn btn-secondary prev-button">Previous</button>
+                        <button class="btn btn-primary next-button">Next Step</button>
+                    </div>
+                </div>
+
+                <!-- Step 4: Review & Generate -->
+                <div class="step-container hidden" data-step="4">
+                    <div class="step-content">
+                        <h2>Ready to Generate Your Blueprint</h2>
+                        <p class="step-intro">Review your answers below. If everything looks good, click the button to get your personalized side-income plan.</p>
+
+                        <div class="review-section">
+                            <h3>Your Skills & Interests</h3>
+                            <p id="review-step1"></p>
+                        </div>
+
+                        <div class="review-section">
+                            <h3>Your Income Goals</h3>
+                            <p id="review-step2"></p>
+                        </div>
+
+                        <div class="review-section">
+                            <h3>Your Work Preferences</h3>
+                            <p id="review-step3"></p>
+                        </div>
+
+                        <div class="info-box">
+                            <p><strong>What happens next:</strong></p>
+                            <ul>
+                                <li>I'll analyze your answers using AI</li>
+                                <li>You'll get 3-5 tailored side-income ideas</li>
+                                <li>Each idea includes a validation plan and action steps</li>
+                                <li>The whole process takes 30-60 seconds</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="step-navigation">
+                        <button class="btn btn-secondary prev-button">Previous</button>
+                        <button class="btn btn-primary generate-button">Generate My Blueprint</button>
+                    </div>
+                </div>
+
+                <!-- Step 5: Results -->
+                <div class="step-container hidden" data-step="5">
+                    <div class="step-content">
+                        <div class="success-header">
+                            <div class="success-icon">🎉</div>
+                            <h2>Your Personalized Blueprint is Ready!</h2>
+                        </div>
+
+                        <div id="blueprint-content" class="blueprint-content">
+                            <!-- AI-generated content will be inserted here -->
+                        </div>
+
+                        <div class="action-buttons">
+                            <button id="save-button" class="btn btn-primary">
+                                <span>💾</span> Save to Browser
+                            </button>
+                            <button id="new-plan-button" class="btn btn-secondary">
+                                <span>🔄</span> Create New Plan
+                            </button>
+                        </div>
+
+                        <div id="saved-plans-section" class="saved-plans-section hidden">
+                            <h3>Your Saved Plans</h3>
+                            <div id="saved-plans-list" class="saved-plans-list">
+                                <!-- Saved plans will be listed here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 Side Income Planner. Built with ❤️ for aspiring side-hustlers.</p>
+            <p class="footer-note">Your answers are processed securely. Plans are saved locally in your browser.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/app.js"></script>
+</body>
+</html>
