@@ -5,8 +5,12 @@
 
 const REPLICATE_API_URL = 'https://api.replicate.com/v1/predictions';
 
-// Using Llama 2 70B Chat with specific working version hash
-const MODEL_VERSION = 'meta/llama-2-70b-chat:2796ee9483c3fd7f2f4cd59390915ae1c6eb2a739d3892c3dc9487a4bac247e2';
+// Using official Meta Llama 3 models (no version hash needed for official models)
+// Try Llama 3 8B first (faster, cheaper), fall back to 70B if needed
+const MODELS = [
+    'meta/llama-3-8b',
+    'meta/llama-3-70b'
+];
 
 // Rate limiting (in-memory, will reset on redeployment)
 const rateLimits = {
@@ -180,7 +184,7 @@ IMPORTANT:
 }
 
 /**
- * Call Replicate API with Llama 2 model
+ * Call Replicate API with official Meta Llama 3 models
  */
 async function callReplicateAPI(prompt) {
     const apiKey = process.env.REPLICATE_API_KEY;
@@ -190,43 +194,69 @@ async function callReplicateAPI(prompt) {
     }
 
     // Log for debugging
-    console.log('Model version:', MODEL_VERSION);
     console.log('Prompt length:', prompt.length);
 
-    // Try using a simpler, more reliable model approach
-    // Use the model without version hash - let Replicate use the latest
-    const response = await fetch(REPLICATE_API_URL, {
-        method: 'POST',
-        headers: {
-            'Authorization': `Token ${apiKey}`,
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            // Use a different model - Mistral Instruct
-            version: 'mistralai/mistral-7b-instruct-v0.1',
-            input: {
-                prompt: prompt,
-                max_tokens: 2500,
-                temperature: 0.7
+    // Try each model in order until one works
+    for (const model of MODELS) {
+        try {
+            console.log(`Trying model: ${model}`);
+
+            const response = await fetch(REPLICATE_API_URL, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Token ${apiKey}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    // Use official Meta Llama 3 models (no version hash needed)
+                    version: model,
+                    input: {
+                        prompt: prompt,
+                        max_tokens: 2500,
+                        temperature: 0.7
+                    }
+                })
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                console.error(`Error with ${model}:`, error);
+
+                // If this is a version/billing error, try next model
+                if (error.detail && (
+                    error.detail.includes('version') ||
+                    error.detail.includes('billing') ||
+                    error.detail.includes('permission')
+                )) {
+                    console.log(`Model ${model} failed, trying next...`);
+                    continue; // Try next model
+                }
+
+                // For other errors, throw immediately
+                throw new Error(error.detail || error.message || 'Failed to call Replicate API');
             }
-        })
-    });
 
-    if (!response.ok) {
-        const error = await response.json();
-        console.error('Replicate API error:', error);
-        throw new Error(error.detail || error.message || 'Failed to call Replicate API');
+            const prediction = await response.json();
+            console.log(`Success with model ${model}, prediction ID:`, prediction.id);
+
+            // Replicate API is async - we need to poll for results
+            if (prediction.status === 'starting' || prediction.status === 'processing') {
+                return await pollForResult(prediction.urls.get, apiKey);
+            }
+
+            return prediction;
+
+        } catch (error) {
+            // If this is the last model, throw the error
+            if (model === MODELS[MODELS.length - 1]) {
+                throw error;
+            }
+            // Otherwise try next model
+            console.log(`Model ${model} failed with error: ${error.message}, trying next...`);
+        }
     }
 
-    const prediction = await response.json();
-    console.log('Prediction created:', prediction.id);
-
-    // Replicate API is async - we need to poll for results
-    if (prediction.status === 'starting' || prediction.status === 'processing') {
-        return await pollForResult(prediction.urls.get, apiKey);
-    }
-
-    return prediction;
+    throw new Error('All models failed. Please check your Replicate account billing at https://replicate.com/account/billing');
 }
 
 /**
@@ -453,9 +483,24 @@ export default async function handler(request, response) {
     } catch (error) {
         console.error('Error in generate-blueprint API:', error);
 
+        // Provide helpful error messages
+        let errorMessage = error.message || 'An unexpected error occurred. Please try again.';
+
+        // Add billing guidance if it appears to be a billing/permission issue
+        if (errorMessage.includes('billing') ||
+            errorMessage.includes('permission') ||
+            errorMessage.includes('version') ||
+            errorMessage.includes('All models failed')) {
+            errorMessage += '\n\n💡 To fix this:\n';
+            errorMessage += '1. Visit https://replicate.com/account/billing\n';
+            errorMessage += '2. Add a payment method to your Replicate account\n';
+            errorMessage += '3. Wait a few minutes for the account to be verified\n';
+            errorMessage += '4. Try generating your blueprint again';
+        }
+
         return response.status(500).json({
             success: false,
-            error: error.message || 'An unexpected error occurred. Please try again.'
+            error: errorMessage
         });
     }
 }
