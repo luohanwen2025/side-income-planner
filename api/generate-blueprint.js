@@ -193,10 +193,8 @@ async function callReplicateAPI(prompt) {
     console.log('Model version:', MODEL_VERSION);
     console.log('Prompt length:', prompt.length);
 
-    // Hardcode the version directly to match test endpoint exactly
-    const version = 'meta/llama-2-70b-chat:2796ee9483c3fd7f2f4cd59390915ae1c6eb2a739d3892c3dc9487a4bac247e2';
-
-    // Create prediction - same format as test endpoint
+    // Try using a simpler, more reliable model approach
+    // Use the model without version hash - let Replicate use the latest
     const response = await fetch(REPLICATE_API_URL, {
         method: 'POST',
         headers: {
@@ -204,10 +202,12 @@ async function callReplicateAPI(prompt) {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-            version: version,
+            // Use a different model - Mistral Instruct
+            version: 'mistralai/mistral-7b-instruct-v0.1',
             input: {
                 prompt: prompt,
-                max_tokens: 2500
+                max_tokens: 2500,
+                temperature: 0.7
             }
         })
     });
