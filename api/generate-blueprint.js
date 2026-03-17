@@ -5,9 +5,8 @@
 
 const REPLICATE_API_URL = 'https://api.replicate.com/v1/predictions';
 
-// Using a reliable model that's guaranteed to work
-// Command R+ - high quality, fast, and actively maintained
-const MODEL_VERSION = 'cohere/command-r-plus';
+// Using Llama 2 70B Chat with specific working version hash
+const MODEL_VERSION = 'meta/llama-2-70b-chat:2796ee9483c3fd7f2f4cd59390915ae1c6eb2a739d3892c3dc9487a4bac247e2';
 
 // Rate limiting (in-memory, will reset on redeployment)
 const rateLimits = {
