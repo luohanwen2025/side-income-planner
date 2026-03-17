@@ -189,7 +189,7 @@ async function callReplicateAPI(prompt) {
         throw new Error('REPLICATE_API_KEY is not configured');
     }
 
-    // Create prediction with messages format for chat models
+    // Create prediction - same format as test endpoint
     const response = await fetch(REPLICATE_API_URL, {
         method: 'POST',
         headers: {
@@ -200,8 +200,7 @@ async function callReplicateAPI(prompt) {
             version: MODEL_VERSION,
             input: {
                 prompt: prompt,
-                max_tokens: 2500,
-                temperature: 0.7
+                max_tokens: 2500
             }
         })
     });
