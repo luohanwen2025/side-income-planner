@@ -5,8 +5,8 @@
 
 const REPLICATE_API_URL = 'https://api.replicate.com/v1/predictions';
 
-// Using Llama 2 70B Chat model - a powerful open-source alternative to GPT-3.5
-const MODEL_VERSION = 'meta/llama-2-70b-chat:13c4ddee3726344faf3933c11dd4564197d38d0b0dc9b9423ae7df9c3ec2cba1';
+// Using Mistral 7B Instruct - fast, cost-effective, and high quality
+const MODEL_VERSION = 'mistralai/mistral-7b-instruct-v0.2';
 
 // Rate limiting (in-memory, will reset on redeployment)
 const rateLimits = {
