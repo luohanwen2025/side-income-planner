@@ -189,6 +189,10 @@ async function callReplicateAPI(prompt) {
         throw new Error('REPLICATE_API_KEY is not configured');
     }
 
+    // Log for debugging
+    console.log('Model version:', MODEL_VERSION);
+    console.log('Prompt length:', prompt.length);
+
     // Create prediction - same format as test endpoint
     const response = await fetch(REPLICATE_API_URL, {
         method: 'POST',
@@ -207,10 +211,12 @@ async function callReplicateAPI(prompt) {
 
     if (!response.ok) {
         const error = await response.json();
+        console.error('Replicate API error:', error);
         throw new Error(error.detail || error.message || 'Failed to call Replicate API');
     }
 
     const prediction = await response.json();
+    console.log('Prediction created:', prediction.id);
 
     // Replicate API is async - we need to poll for results
     if (prediction.status === 'starting' || prediction.status === 'processing') {
