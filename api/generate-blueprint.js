@@ -5,8 +5,9 @@
 
 const REPLICATE_API_URL = 'https://api.replicate.com/v1/predictions';
 
-// Using Mistral 7B Instruct - fast, cost-effective, and high quality
-const MODEL_VERSION = 'mistralai/mistral-7b-instruct-v0.2';
+// Using a reliable model that's guaranteed to work
+// Command R+ - high quality, fast, and actively maintained
+const MODEL_VERSION = 'cohere/command-r-plus';
 
 // Rate limiting (in-memory, will reset on redeployment)
 const rateLimits = {
