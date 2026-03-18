@@ -1,4 +1,4 @@
-// Test endpoint to check Replicate API connection
+// Enhanced test endpoint to diagnose Replicate API issues
 export default async function handler(request, response) {
     try {
         const REPLICATE_API_URL = 'https://api.replicate.com/v1/predictions';
@@ -11,28 +11,60 @@ export default async function handler(request, response) {
             });
         }
 
-        // Test with a simple model that's guaranteed to work
-        const testResponse = await fetch(REPLICATE_API_URL, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Token ${apiKey}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                version: 'meta/llama-2-70b-chat:2796ee9483c3fd7f2f4cd59390915ae1c6eb2a739d3892c3dc9487a4bac247e2',
-                input: {
-                    prompt: 'Hello, world!',
-                    max_tokens: 10
-                }
-            })
-        });
+        const testResults = [];
+        const models = [
+            'meta/llama-3-8b',
+            'meta/llama-3-70b',
+            'meta/meta-llama-3-8b',
+            'meta/meta-llama-3-70b-instruct'
+        ];
 
-        const result = await testResponse.json();
+        // Test each model
+        for (const model of models) {
+            try {
+                console.log(`Testing model: ${model}`);
+
+                const testResponse = await fetch(REPLICATE_API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Token ${apiKey}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        version: model,
+                        input: {
+                            prompt: 'Hello',
+                            max_tokens: 5
+                        }
+                    })
+                });
+
+                const result = await testResponse.json();
+
+                testResults.push({
+                    model: model,
+                    status: testResponse.status,
+                    ok: testResponse.ok,
+                    result: result
+                });
+
+                if (testResponse.ok) {
+                    // If this one works, no need to test more
+                    break;
+                }
+
+            } catch (error) {
+                testResults.push({
+                    model: model,
+                    error: error.message
+                });
+            }
+        }
 
         return response.status(200).json({
             success: true,
-            message: 'API key is valid',
-            detail: result
+            message: 'Test complete',
+            results: testResults
         });
 
     } catch (error) {
