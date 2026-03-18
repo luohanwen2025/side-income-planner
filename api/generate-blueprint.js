@@ -5,11 +5,11 @@
 
 const REPLICATE_API_URL = 'https://api.replicate.com/v1/predictions';
 
-// Using official Meta Llama 3 models (no version hash needed for official models)
+// Using official Meta Llama 3 models (correct format: meta/meta-llama-3-*)
 // Try Llama 3 8B first (faster, cheaper), fall back to 70B if needed
 const MODELS = [
-    'meta/llama-3-8b',
-    'meta/llama-3-70b'
+    'meta/meta-llama-3-8b',
+    'meta/meta-llama-3-70b-instruct'
 ];
 
 // Rate limiting (in-memory, will reset on redeployment)
